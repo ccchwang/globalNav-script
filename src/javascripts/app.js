@@ -2,23 +2,7 @@ window.explorationsNav = window.explorationsNav || {};
 
 window.explorationsNav = {
   init: function() {
-    this.dataSource = {
-      'fantasy-football': {
-        url: 'https://explorations.viget.com/fantasy-football', title: 'The Future of Fantasy Football'
-      },
-      'medicine': {
-        url: 'https://explorations.viget.com/medicine', title: 'Improving Medication Adherence'
-      },
-      'fridge': {
-        url: 'https://explorations.viget.com/fridge', title: 'Refrigerator Refresh'
-      },
-      'homebuying': {
-        url: 'https://explorations.viget.com/homebuying', title: 'Reimagining the home buying process'
-      },
-      'onlineshopping': {
-        url: 'https://explorations.viget.com/onlineshopping', title: 'Improving the way we shop online'
-      }
-    };
+    this.dataSource = require('../static/data-source.json');
 
     this.setCurrentSite();
     this.appendElements();
@@ -69,7 +53,7 @@ window.explorationsNav = {
     let externalStyles = document.createElement('link');
     externalStyles.type = 'text/css';
     externalStyles.rel = 'stylesheet';
-    externalStyles.href = 'https://chloehwang.github.io/globalNav-script/style.css';
+    externalStyles.href = 'https://chloehwang.github.io/globalNav-script/stylesheets/app.css';
 
     let styles = document.createElement('style');
     styles.innerHTML = `.gnav-explorations-nav__top{background-color:${this.colorBase}}.gnav-explorations-nav__logo{background-color:${this.colorLogo}}.gnav-explorations-nav__bottom{background-color:${this.colorMenu}}`;

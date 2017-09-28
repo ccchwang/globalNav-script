@@ -1,0 +1,18 @@
+{
+  "fantasy-football": {
+    "url": "https://explorations.viget.com/fantasy-football", "title": "The Future of Fantasy Football"
+  },
+  "medicine": {
+    "url": "https://explorations.viget.com/medicine", "title": "Improving Medication Adherence"
+  },
+  "fridge": {
+    "url": "https://explorations.viget.com/fridge", "title": "Refrigerator Refresh"
+  },
+  "homebuying": {
+    "url": "https://explorations.viget.com/homebuying", "title": "Reimagining the home buying process"
+  },
+  "onlineshopping": {
+    "url": "https://explorations.viget.com/onlineshopping", "title": "Improving the way we shop online"
+  }
+}
+
