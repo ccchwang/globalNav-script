@@ -68,12 +68,14 @@ window.explorationsNav = {
   },
 
   generateStylesheet: function() {
-    let css = `.gnav-explorations-nav__top{background-color:${this.colorBase}}.gnav-explorations-nav__logo{background-color:${this.colorLogo}}.gnav-explorations-nav__bottom{background-color:${this.colorMenu}}`;
-
     let stylesheet = document.createElement('link');
     stylesheet.type = 'text/css';
     stylesheet.rel = 'stylesheet';
     stylesheet.href = 'https://chloehwang.github.io/globalNav-script/style.css';
+
+    stylesheet.insertRule(`.gnav-explorations-nav__top{background-color:${this.colorBase}}`, 0);
+    stylesheet.insertRule(`.gnav-explorations-nav__logo{background-color:${this.colorLogo}}`, 0);
+    stylesheet.insertRule(`.gnav-explorations-nav__bottom{background-color:${this.colorMenu}}`, 0);
 
     return stylesheet;
   }
