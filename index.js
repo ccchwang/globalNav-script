@@ -73,7 +73,7 @@ window.explorationsNav = {
     let stylesheet = document.createElement('link');
     stylesheet.type = 'text/css';
     stylesheet.rel = 'stylesheet';
-    stylesheet.href = './style.css';
+    stylesheet.href = 'https://chloehwang.github.io/globalNav-script/style.css';
 
     return stylesheet;
   }
