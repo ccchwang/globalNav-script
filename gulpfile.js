@@ -11,6 +11,12 @@ var uglify = require('gulp-uglify');
 var runSequence = require('run-sequence');
 var del = require('del');
 
+//var injectHtml = require('gulp-inject-stringified-html');
+// gulp.task('js', function () {
+//  return gulp.src(['src/javascript/index.js'])
+//    .pipe(injectHtml())                    // <--- this!
+//    .pipe(gulp.dest('docs/hello.js'));
+// });
 
 const handleError = function(err){
   console.error(err);
