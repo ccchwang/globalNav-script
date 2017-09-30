@@ -1,16 +1,15 @@
 var gulp = require('gulp');
 var gulpif = require('gulp-if');
-var sourcemaps = require('gulp-sourcemaps');
 var sass = require('gulp-sass');
 var autoprefixer = require('gulp-autoprefixer');
 var cssnano = require('gulp-cssnano');
+var css2js = require("gulp-css2js");
 var browserSync = require('browser-sync').create();
 var htmlmin = require('gulp-htmlmin');
 var webpack = require('webpack-stream');
 var uglify = require('gulp-uglify');
 var runSequence = require('run-sequence');
 var del = require('del');
-
 
 
 const handleError = function(err){
@@ -30,15 +29,17 @@ gulp.task('browserSync', function() {
 
 //CSS
 gulp.task('css', function(){
-  return gulp.src('src/stylesheet/style.scss')
-    .pipe(gulpif(!global.production, sourcemaps.init()))
+  return gulp.src('src/stylesheet/**/*.scss')
     .pipe(sass())
     .on('error', handleError)
     .pipe(autoprefixer({browsers: ['last 3 versions']}))
-    .pipe(gulpif(!global.production, sourcemaps.write()))
     .pipe(gulpif(global.production, cssnano({preset: 'default'})))
-    .pipe(gulp.dest('docs/stylesheet'))
-    .pipe(browserSync.stream())
+    .pipe(css2js({
+      prefix: "export default function() { return `",
+      suffix: "`}",
+      splitOnNewline: false
+  }))
+    .pipe(gulp.dest('src/javascript'))
 });
 
 
@@ -53,9 +54,8 @@ gulp.task('html', function(){
 
 //JAVASCRIPT
 gulp.task('javascript', function(){
-  return gulp.src('src/javascript/*.js')
+  return gulp.src('src/javascript/index.js')
     .pipe(webpack({
-      //watch: global.production ? false : true,
       module: {
         loaders: [
           {
@@ -81,12 +81,11 @@ gulp.task('javascript', function(){
 
 //WATCH - DEVELOPMENT
 gulp.task('watch', function(){
-  runSequence('javascript',
-    ['css', 'html', 'browserSync'],
+  runSequence('css', 'javascript',
+    ['html', 'browserSync'],
     function() {
-      gulp.watch('src/stylesheet/**/*.scss', ['css']);
-      gulp.watch('src/data/index.json', ['javascript']);
-      gulp.watch('src/javascript/**/*.js', ['javascript']);
+      gulp.watch('src/stylesheet/**/*.scss', ['css', 'javascript']);
+      gulp.watch(['src/data/index.json', 'src/javascript/index.js'], ['javascript']);
       gulp.watch('src/*.html', ['html']);
     }
   )
@@ -99,10 +98,10 @@ gulp.task('clean', function(){
   return del.sync('docs');
 })
 
+
 //BUILD - PRODUCTION
 gulp.task('build', function(){
-  runSequence('clean',
-    ['css', 'html', 'javascript'],
+  runSequence('clean', 'css', 'javascript', 'html',
     function() {
       console.log('Finished building~!');
     }

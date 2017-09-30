@@ -29,16 +29,13 @@ window.explorationsNav = {
   },
 
   appendStyles: function() {
-    let externalStyles = document.createElement('link');
-    externalStyles.type = 'text/css';
-    externalStyles.rel = 'stylesheet';
-    externalStyles.href = 'https://chloehwang.github.io/globalNav-script/style.css';
+    let cssText = require('./style.js').default();
+    cssText = cssText += `.gnav-explorations-nav__top{background-color:${this.colorBase}}.gnav-explorations-nav__logo{background-color:${this.colorLogo}}.gnav-explorations-nav__bottom{background-color:${this.colorMenu}}`;
 
-    let styles = document.createElement('style');
-    styles.innerHTML = `.gnav-explorations-nav__top{background-color:${this.colorBase}}.gnav-explorations-nav__logo{background-color:${this.colorLogo}}.gnav-explorations-nav__bottom{background-color:${this.colorMenu}}`;
+    let stylesheet = document.createElement('style');
+    stylesheet.innerHTML = cssText;
 
-    document.head.appendChild(externalStyles);
-    document.head.appendChild(styles);
+    document.head.appendChild(stylesheet);
   },
 
   setVars: function() {
