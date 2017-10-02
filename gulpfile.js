@@ -3,20 +3,14 @@ var gulpif = require('gulp-if');
 var sass = require('gulp-sass');
 var autoprefixer = require('gulp-autoprefixer');
 var cssnano = require('gulp-cssnano');
-var css2js = require("gulp-css2js");
 var browserSync = require('browser-sync').create();
 var htmlmin = require('gulp-htmlmin');
 var webpack = require('webpack-stream');
 var uglify = require('gulp-uglify');
 var runSequence = require('run-sequence');
 var del = require('del');
+var injectFiles = require('gulp-inject-stringified-html');
 
-//var injectHtml = require('gulp-inject-stringified-html');
-// gulp.task('js', function () {
-//  return gulp.src(['src/javascript/index.js'])
-//    .pipe(injectHtml())                    // <--- this!
-//    .pipe(gulp.dest('docs/hello.js'));
-// });
 
 const handleError = function(err){
   console.error(err);
@@ -40,12 +34,7 @@ gulp.task('css', function(){
     .on('error', handleError)
     .pipe(autoprefixer({browsers: ['last 3 versions']}))
     .pipe(gulpif(global.production, cssnano({preset: 'default'})))
-    .pipe(css2js({
-      prefix: "export default function() { return `",
-      suffix: "`}",
-      splitOnNewline: false
-  }))
-    .pipe(gulp.dest('src/javascript'))
+    .pipe(gulp.dest('docs/stylesheet'))
 });
 
 
@@ -58,40 +47,58 @@ gulp.task('html', function(){
 });
 
 
+//DATA
+gulp.task('data', function(){
+  return gulp.src('src/data/*')
+    .pipe(gulpif(global.production, htmlmin({collapseWhitespace: true})))
+    .pipe(gulp.dest('docs/data'))
+});
+
+
 //JAVASCRIPT
 gulp.task('javascript', function(){
-  return gulp.src('src/javascript/index.js')
-    .pipe(webpack({
-      module: {
-        loaders: [
-          {
-            test: /\.js$/,
-            loader: 'babel-loader',
-            query: {
-              presets: ['es2015']
+
+  return new Promise(resolve =>
+    gulp.src('src/javascript/index.js')
+      .pipe(webpack({
+        module: {
+          loaders: [
+            {
+              test: /\.js$/,
+              loader: 'babel-loader',
+              query: {
+                presets: ['es2015']
+              }
             }
-          }
-        ]
-      },
-      output: {
-        filename: 'bundle.js',
-      },
-    }))
-    .on('error', handleError)
-    .pipe(gulpif(global.production, uglify()))
-    .pipe(gulp.dest('docs/javascript'))
-    .pipe(browserSync.stream())
+          ]
+        },
+        output: {
+          filename: 'bundle.js',
+        },
+      }))
+      .on('error', handleError)
+      .pipe(gulpif(global.production, uglify()))
+      .pipe(gulp.dest('docs/javascript'))
+      .on('end', resolve)
+  )
+  .then(() =>
+    gulp.src('docs/javascript/bundle.js')
+      .pipe(injectFiles())
+      .on('error', handleError)
+      .pipe(gulp.dest('docs/javascript'))
+      .pipe(browserSync.stream())
+  );
 });
 
 
 
 //WATCH - DEVELOPMENT
 gulp.task('watch', function(){
-  runSequence('css', 'javascript',
-    ['html', 'browserSync'],
+  runSequence('css', 'data', 'javascript', 'html', 'browserSync',
     function() {
       gulp.watch('src/stylesheet/**/*.scss', ['css', 'javascript']);
-      gulp.watch(['src/data/index.json', 'src/javascript/index.js'], ['javascript']);
+      gulp.watch(['src/data/*.json', 'src/javascript/index.js'], ['javascript']);
+      gulp.watch('src/data/*.html', ['data', 'javascript']);
       gulp.watch('src/*.html', ['html']);
     }
   )
@@ -107,13 +114,9 @@ gulp.task('clean', function(){
 
 //BUILD - PRODUCTION
 gulp.task('build', function(){
-  runSequence('clean', 'css', 'javascript', 'html',
+  runSequence('clean', 'css', 'data', 'javascript', 'html',
     function() {
       console.log('Finished building~!');
     }
   )
 })
-
-
-
-
